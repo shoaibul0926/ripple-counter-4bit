@@ -1,5 +1,7 @@
 <div align="center">
 
+🌐 **Live page: https://shoaibul0926.github.io/ripple-counter-4bit/**
+
 # ⏱️ 4-Bit Ripple Carry Counter
 
 **A counter built from four flip-flops, written in Verilog, simulated and viewed as a waveform.**

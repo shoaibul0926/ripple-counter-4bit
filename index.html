@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-Bit Ripple Counter</title>
+<meta name="description" content="A 4-bit ripple carry counter in Verilog, with explanation, code and simulated waveform.">
+<style>
+:root{--bg:#0e1420;--card:#161f31;--line:#26324a;--txt:#e6ebf5;--mut:#9aa8c3;--acc:#4fd1a5;--acc2:#6ea8ff}
+@media(prefers-color-scheme:light){:root{--bg:#f4f7fb;--card:#fff;--line:#d9e1ee;--txt:#18212f;--mut:#56637a;--acc:#0a9470;--acc2:#2563eb}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 system-ui,Segoe UI,sans-serif}
+.w{max-width:920px;margin:0 auto;padding:0 16px}
+header{padding:64px 0 40px;text-align:center;background:linear-gradient(180deg,rgba(79,209,165,.12),transparent)}
+h1{font-size:clamp(28px,6vw,46px);margin:0 0 10px}h1 span{color:var(--acc)}
+.sub{color:var(--mut);max-width:620px;margin:0 auto 22px}
+.btn{display:inline-block;padding:10px 20px;border-radius:8px;background:var(--acc);color:#04241b;font-weight:600;text-decoration:none;margin:4px}
+.btn.o{background:transparent;color:var(--txt);border:1px solid var(--line)}
+section{padding:30px 0}h2{font-size:26px;margin:0 0 14px}h2::before{content:"";display:inline-block;width:6px;height:22px;background:var(--acc);border-radius:3px;margin-right:10px;vertical-align:-3px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.steps .card b{color:var(--acc2)}.steps .n{font-size:30px;color:var(--acc);font-weight:700}
+.chain{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;margin:10px 0}
+.box{border:2px solid var(--acc);border-radius:8px;padding:10px 14px;text-align:center;font-weight:600}
+.box small{display:block;color:var(--mut);font-weight:400}.arr{color:var(--mut);font-size:13px;text-align:center}
+table{width:100%;border-collapse:collapse;font-size:15px}th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mut);font-weight:600}
+code{font-family:Consolas,monospace;color:var(--acc2)}
+pre{background:#0a0f1a;color:#d7e2f5;border-radius:10px;padding:14px;overflow-x:auto;font:13.5px/1.5 Consolas,monospace;margin:8px 0 18px;border:1px solid var(--line)}
+pre code{color:inherit}
+img{max-width:100%;border-radius:10px;border:1px solid var(--line)}
+.note{border-left:4px solid var(--acc2);padding:10px 14px;background:var(--card);border-radius:0 8px 8px 0;color:var(--mut)}
+footer{text-align:center;color:var(--mut);padding:36px 0 50px;border-top:1px solid var(--line)}a{color:var(--acc2)}
+</style></head><body>
+<header><div class="w">
+<h1>4-Bit <span>Ripple Carry</span> Counter</h1>
+<p class="sub">A counter built from four flip-flops, written in Verilog, simulated with Icarus Verilog and viewed as a waveform in GTKWave.</p>
+<a class="btn" href="#wave">See the waveform</a><a class="btn o" href="#code">See the code</a><a class="btn o" href="https://github.com/shoaibul0926/ripple-counter-4bit">GitHub repo</a>
+</div></header>
+<div class="w">
+
+<section><h2>What is this?</h2><div class="card">
+A <b>counter</b> is a circuit that counts clock pulses. This one is <b>4-bit</b>, so it holds a number from <b>0 to 15</b> (<code>0000</code> to <code>1111</code>). After 15 it wraps back to 0 and keeps going.
+It is called a <b>ripple</b> counter because the clock only goes to the first flip-flop. Each next flip-flop is clocked by the output of the one before it, so the change ripples from the first bit to the last, like a row of dominoes.
+</div></section>
+
+<section><h2>How it works</h2><div class="steps">
+<div class="card"><div class="n">1</div><b>D flip-flop</b><br>Remembers one bit. On the falling edge of its clock it copies input <code>d</code> to output <code>q</code>. If <code>reset</code> goes high it clears <code>q</code> to 0 straight away.</div>
+<div class="card"><div class="n">2</div><b>T flip-flop</b><br>Connect the D input to its own inverted output (<code>d = ~q</code>) and every clock pulse flips the output. Its output is the clock divided by 2.</div>
+<div class="card"><div class="n">3</div><b>Chain four</b><br><code>q[0]</code> is clocked by <code>clk</code>, <code>q[1]</code> by <code>q[0]</code>, <code>q[2]</code> by <code>q[1]</code>, <code>q[3]</code> by <code>q[2]</code>. Each stage is half as fast, which is how binary counting works.</div>
+</div>
+<div class="card" style="margin-top:14px"><div class="chain">
+<div class="box">clk</div><span class="arr">&rarr;</span>
+<div class="box">T_FF 0<small>q[0]</small></div><span class="arr">&rarr;</span>
+<div class="box">T_FF 1<small>q[1]</small></div><span class="arr">&rarr;</span>
+<div class="box">T_FF 2<small>q[2]</small></div><span class="arr">&rarr;</span>
+<div class="box">T_FF 3<small>q[3]</small></div></div>
+<p class="arr">reset goes to all four flip-flops</p></div>
+<table style="margin-top:14px"><tr><th>Bit</th><th>Clocked by</th><th>Toggles every</th><th>Frequency (clk = 100 MHz)</th></tr>
+<tr><td><code>q[0]</code></td><td>clk</td><td>1 clock</td><td>50 MHz</td></tr>
+<tr><td><code>q[1]</code></td><td>q[0]</td><td>2 clocks</td><td>25 MHz</td></tr>
+<tr><td><code>q[2]</code></td><td>q[1]</td><td>4 clocks</td><td>12.5 MHz</td></tr>
+<tr><td><code>q[3]</code></td><td>q[2]</td><td>8 clocks</td><td>6.25 MHz</td></tr></table>
+<p class="note" style="margin-top:14px"><b>Ripple delay:</b> each flip-flop waits for the one before it, so delays add up. That is why this counter is simple but slower than a synchronous counter, where all flip-flops share one clock.</p>
+</section>
+
+<section id="wave"><h2>Waveform</h2>
+<img src="waveform.png" alt="GTKWave waveform of the counter counting 0 to F and resetting">
+<div class="card" style="margin-top:14px"><table>
+<tr><th>Signal</th><th>Meaning</th></tr>
+<tr><td><code>clk</code></td><td>The clock, period 10 ns</td></tr>
+<tr><td><code>reset</code></td><td>High at the start, low from 15 ns so counting starts, high again at 195 ns to show a reset mid-count</td></tr>
+<tr><td><code>q[3:0]</code></td><td>The whole counter as one hex number, 0 to F</td></tr>
+<tr><td><code>q[3]</code>..<code>q[0]</code></td><td>The four bits. <code>q[0]</code> is fastest, <code>q[3]</code> slowest</td></tr></table></div>
+<p class="note" style="margin-top:14px">The count goes 0, 1, 2 ... 9, A ... F, then wraps to 0 at 170 ns. At 195 ns reset drops <code>q</code> to 0 at once without waiting for a clock edge, which is what asynchronous reset means.</p>
+</section>
+
+<section><h2>Simulation output</h2>
+<pre>0 Output q = 0
+20 Output q = 1
+30 Output q = 2
+...
+160 Output q = 15
+170 Output q = 0      &lt;- wraps after 15
+180 Output q = 1
+190 Output q = 2
+195 Output q = 0      &lt;- reset asserted mid-count
+210 Output q = 1
+220 Output q = 2</pre>
+<p>The first count is at 20 ns, not 10 ns, because <code>reset</code> is still high until 15 ns.</p></section>
+
+<section id="code"><h2>The code</h2>
+<b>D_FF.v</b><pre><code>`timescale 1ns/1ps
+// D flip-flop: negative-edge clock, asynchronous active-high reset
+module D_FF(q, d, clk, reset);
+    output q;
+    input  d, clk, reset;
+    reg    q;
+
+    always @(posedge reset or negedge clk)
+        if (reset)
+            q = 1&#x27;b0;
+        else
+            q = d;
+endmodule</code></pre>
+<b>T_FF.v</b><pre><code>`timescale 1ns/1ps
+// T flip-flop built from a D flip-flop and an inverter
+module T_FF(q, clk, reset);
+    output q;
+    input  clk, reset;
+    wire   d;
+
+    D_FF dff0(q, d, clk, reset);
+    not  n1(d, q);          // not is a Verilog primitive; D = ~Q makes it toggle
+endmodule</code></pre>
+<b>ripple_carry_counter.v</b><pre><code>`timescale 1ns/1ps
+// Top block: 4-bit ripple carry counter
+module ripple_carry_counter(q, clk, reset);
+    output [3:0] q;
+    input        clk, reset;
+
+    // 4 instances of the T flip-flop; each is clocked by the previous stage&#x27;s q
+    T_FF tff0(q[0], clk,  reset);
+    T_FF tff1(q[1], q[0], reset);
+    T_FF tff2(q[2], q[1], reset);
+    T_FF tff3(q[3], q[2], reset);
+endmodule</code></pre>
+<b>stimulus.v</b> (testbench)<pre><code>`timescale 1ns/1ps
+// Stimulus block (testbench): drives clk and reset, prints q
+module stimulus;
+    reg        clk;
+    reg        reset;
+    wire [3:0] q;
+
+    // instantiate the design block
+    ripple_carry_counter r1(q, clk, reset);
+
+    // clock: toggles every 5 ns (period 10 ns)
+    initial clk = 1&#x27;b0;
+    always #5 clk = ~clk;
+
+    // control reset
+    initial begin
+        reset = 1&#x27;b1;       // reset the counter
+        #15 reset = 1&#x27;b0;   // release reset, counting starts
+        #180 reset = 1&#x27;b1;  // reset again mid-count
+        #10 reset = 1&#x27;b0;
+        #20 $finish;
+    end
+
+    // waveform dump (for GTKWave) and console monitor
+    initial begin
+        $dumpfile(&quot;dump.vcd&quot;);
+        $dumpvars(0, stimulus);
+    end
+    initial $monitor($time, &quot; Output q = %d&quot;, q);
+endmodule</code></pre></section>
+
+<section><h2>Run it yourself</h2>
+<pre>iverilog -o sim D_FF.v T_FF.v ripple_carry_counter.v stimulus.v
+vvp sim
+gtkwave dump.vcd --script view.tcl</pre>
+<p>On Windows just double-click <code>run.bat</code>. Get the files from the <a href="https://github.com/shoaibul0926/ripple-counter-4bit">GitHub repo</a>.</p></section>
+</div>
+<footer>4-Bit Ripple Carry Counter &middot; Verilog &middot; <a href="https://github.com/shoaibul0926/ripple-counter-4bit">Source on GitHub</a></footer>
+</body></html>
