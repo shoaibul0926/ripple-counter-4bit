@@ -21,7 +21,7 @@ stimulus (testbench)
 | `stimulus.v` | Stimulus block (testbench): clock, reset, `$monitor` |
 
 ## Waveform
-Simulated with Icarus Verilog and viewed in GTKWave. `q[3:0]` is shown in binary and each bit `[3]`..`[0]` is drawn as its own 0/1 wave. `reset` is high at the start and again at 195 ns.
+Simulated with Icarus Verilog and viewed in GTKWave. `q[3:0]` is shown as a bus (hex 0-F) and each bit `[3]`..`[0]` is drawn as its own 0/1 wave. `reset` is high at the start and again at 195 ns.
 
 ![Waveform](waveform.png)
 
