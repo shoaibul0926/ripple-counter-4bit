@@ -25,7 +25,7 @@ module tb_ripple_counter_4bit;
     endtask
 
     initial begin
-        $dumpfile("ripple_counter_4bit.vcd");
+        $dumpfile("dump.vcd");
         $dumpvars(0, tb_ripple_counter_4bit);
 
         errors = 0;

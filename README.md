@@ -24,9 +24,12 @@ clk ─▶ FF0 ─q0─▶ FF1 ─q1─▶ FF2 ─q2─▶ FF3 ─q3
 ```
 iverilog -o sim t_ff.v ripple_counter_4bit.v tb_ripple_counter_4bit.v
 vvp sim
-gtkwave ripple_counter_4bit.vcd
+gtkwave dump.vcd
 ```
 
 ## Notes
 - Ripple counters are not fully synchronous: outputs settle stage by stage (about 4 × `TPD`), so the max clock frequency is limited by the total ripple delay, and intermediate glitch values appear briefly on `q`.
 - The testbench samples 8 ns after each falling edge, once the ripple has settled.
+
+## Verified
+Simulated on EDA Playground (Icarus Verilog 12.0): `PASS: all checks passed`. Count runs 0→15 twice with wrap, and the async reset clears the count mid-run. The waveform is dumped to `dump.vcd` so EPWave picks it up automatically.
