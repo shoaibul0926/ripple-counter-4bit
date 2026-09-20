@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-// Top block: 4-bit ripple carry counter (after Palnitkar, Verilog HDL, hierarchical modeling example)
+// Top block: 4-bit ripple carry counter
 module ripple_carry_counter(q, clk, reset);
     output [3:0] q;
     input        clk, reset;

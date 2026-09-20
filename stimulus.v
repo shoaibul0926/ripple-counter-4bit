@@ -21,7 +21,7 @@ module stimulus;
         #20 $finish;
     end
 
-    // waveform dump (EDA Playground / EPWave) and console monitor
+    // waveform dump (for GTKWave) and console monitor
     initial begin
         $dumpfile("dump.vcd");
         $dumpvars(0, stimulus);

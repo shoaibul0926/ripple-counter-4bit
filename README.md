@@ -1,8 +1,6 @@
 # 4-Bit Ripple Carry Counter (Verilog)
 
-Basic hierarchical design after the ripple carry counter example in *Verilog HDL: A Guide to Digital Design and System Synthesis* by Samir Palnitkar.
-
-**Run it online (EDA Playground, Icarus Verilog):** https://www.edaplayground.com/x/DR8z
+Basic hierarchical Verilog design: a top block, a T flip-flop built from a D flip-flop, and a stimulus testbench. Simulated with Icarus Verilog and viewed in GTKWave.
 
 ## Block structure
 ```
@@ -23,7 +21,7 @@ stimulus (testbench)
 | `stimulus.v` | Stimulus block (testbench): clock, reset, `$monitor` |
 
 ## Waveform
-Simulated on EDA Playground (EPWave). `q[3:0]` is shown in binary and each bit `[3]`..`[0]` is drawn as its own 0/1 wave. `reset` is high at the start and again at 195 ns.
+Simulated with Icarus Verilog and viewed in GTKWave. `q[3:0]` is shown in binary and each bit `[3]`..`[0]` is drawn as its own 0/1 wave. `reset` is high at the start and again at 195 ns.
 
 ![Waveform](waveform.png)
 
@@ -47,7 +45,7 @@ Simulated on EDA Playground (EPWave). `q[3:0]` is shown in binary and each bit `
 `ripple_carry_counter.v`
 ```verilog
 `timescale 1ns/1ps
-// Top block: 4-bit ripple carry counter (after Palnitkar, Verilog HDL, hierarchical modeling example)
+// Top block: 4-bit ripple carry counter
 module ripple_carry_counter(q, clk, reset);
     output [3:0] q;
     input        clk, reset;
@@ -118,7 +116,7 @@ module stimulus;
         #20 $finish;
     end
 
-    // waveform dump (EDA Playground / EPWave) and console monitor
+    // waveform dump (for GTKWave) and console monitor
     initial begin
         $dumpfile("dump.vcd");
         $dumpvars(0, stimulus);
@@ -128,11 +126,13 @@ endmodule
 ```
 
 ## How to run
-**Online:** open the playground link above and press Run (Icarus Verilog, "Open EPWave after run" ticked). The design modules are in the right pane and `stimulus` is in the left pane.
+Needs [Icarus Verilog](https://bleyer.org/icarus/) (the Windows installer includes GTKWave).
 
-**Locally (Icarus Verilog):**
+**Windows:** double-click `run.bat`. It compiles, runs the simulation and opens GTKWave with `clk`, `reset`, `q[3:0]` and each bit already loaded (`view.tcl`).
+
+**By hand:**
 ```
 iverilog -o sim D_FF.v T_FF.v ripple_carry_counter.v stimulus.v
 vvp sim
-gtkwave dump.vcd
+gtkwave dump.vcd --script view.tcl
 ```
